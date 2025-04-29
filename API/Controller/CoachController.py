@@ -9,6 +9,7 @@ from API.Model.TeamCoach import TeamCoach
 from API.Model.TeamPlayer import TeamPlayer
 from API.Model.SessionShot import SessionShot
 from API.Model.Shot import Shot
+from API.Model.Angle import Angle
 
 
 class CoachController:
@@ -130,8 +131,12 @@ class CoachController:
             db.session.commit()
 
             return {"Result": "Players added successfully"}
-        except Exception:
-            return {"Result": "Error while adding players in this session."}
+        except Exception as exp:
+            return {"Error": exp}
+
+    # @staticmethod
+    # def uploadSession(videoPath):
+    #
 
     @staticmethod
     def update_session(session_id):
@@ -152,63 +157,232 @@ class CoachController:
                 in sessions]
 
     @staticmethod
-    def add_shot_result(sessionshot_id, player_angles):
+    def compare_shot_angles(shot_name, player_angles):
+        try:
+            shot = Shot.query.filter(Shot.name == shot_name).first()
+            print("shot name is:", shot.name)
+            print("shot id is:", shot.id)
+            # ideal_shots = ShotIdealAngle.query.all()
+            # ideal_angles = [{'id': angle.id, 'angle_id': angle.angle_name_id, 'shot_id': angle.shot_id,
+            #                  'angle_from': angle.angle_from, 'angle_to': angle.angle_to} for angle in ideal_shots]
 
-        ideal_shots = ShotIdealAngle.query.all()
-        ideal_angles = [{'id': angle.id, 'angle_id': angle.angle_name_id, 'shot_id': angle.shot_id,
-                         'angle_from': angle.angle_from, 'angle_to': angle.angle_to} for angle in ideal_shots]
+            ideal_angles = ShotIdealAngle.query.filter(ShotIdealAngle.shot_id == shot.id).all()
 
-        results = [
-            {
-                'Left Arm Ideal Angle': [ideal_angles[0]['angle_from'], ideal_angles[0]['angle_to']],
-                'Left Arm Played Angle': player_angles['Left Arm Angle'],
-                'is_shot_correct': (
-                        ideal_angles[0]['angle_from'] < player_angles['Left Arm Angle'] < ideal_angles[0]['angle_to'])
-            },
-            {
-                'Right Arm Ideal Angle': [ideal_angles[1]['angle_from'], ideal_angles[1]['angle_to']],
-                'Right Arm Played Angle': player_angles['Right Arm Angle'],
-                'is_shot_correct': (
-                        ideal_angles[1]['angle_from'] < player_angles['Right Arm Angle'] < ideal_angles[1]['angle_to'])
-            },
-            {
-                'Left Leg Ideal Angle': [ideal_angles[2]['angle_from'], ideal_angles[2]['angle_to']],
-                'Left Leg Played Angle': player_angles['Left Leg Angle'],
-                'is_shot_correct': (
-                        ideal_angles[2]['angle_from'] < player_angles['Left Leg Angle'] < ideal_angles[2]['angle_to'])
-            },
-            {
-                'Right Leg Ideal Angle': [ideal_angles[3]['angle_from'], ideal_angles[3]['angle_to']],
-                'Right Leg Played Angle': player_angles['Right Leg Angle'],
-                'is_shot_correct': (
-                        ideal_angles[3]['angle_from'] < player_angles['Right Leg Angle'] < ideal_angles[3]['angle_to'])
-            }
-        ]
+            # Map ideal angles by angle name
+            angle_map = {}
+            for entry in ideal_angles:
+                angle_obj = Angle.query.filter_by(id=entry.angle_name_id).first()
+                angle_name = angle_obj.name.lower()
+                angle_map[angle_name] = {
+                    'from': entry.angle_from,
+                    'to': entry.angle_to
+                }
+            # results = [
+            #     {
+            #         'Elbow Ideal Angle': [ideal_angles[shot_id]['elbow angle']['angle_from'],
+            #                               ideal_angles[shot_id]['elbow angle']['angle_to']],
+            #         'Player Elbow Angle': player_angles['Front Elbow Angle'],
+            #         'is_shot_correct': (
+            #                 ideal_angles[shot_id]['elbow angle']['angle_from'] < player_angles['Front Elbow Angle'] <
+            #                 ideal_angles[shot_id]['elbow angle']['angle_to'])
+            #     },
+            #     {
+            #         'Ideal shoulder inclination': [ideal_angles[shot_id]['shoulder inclination']['angle_from'],
+            #                                        ideal_angles[shot_id]['shoulder inclination']['angle_to']],
+            #         'Player shoulder inclination': player_angles['Shoulder Inclination'],
+            #         'is_shot_correct': (
+            #                 ideal_angles[shot_id]['shoulder inclination']['angle_from'] < player_angles[
+            #             'Shoulder Inclination'] < ideal_angles[shot_id]['shoulder inclination']['angle_to'])
+            #     },
+            #     {
+            #         'Ideal wrist Angle': [ideal_angles[shot_id]['wrist angle']['angle_from'],
+            #                               ideal_angles[shot_id]['wrist angle']['angle_to']],
+            #         'Player wrist Angle': player_angles['Front Wrist Angle'],
+            #         'is_shot_correct': (
+            #                 ideal_angles[shot_id]['wrist angle']['angle_from'] < player_angles['Front Wrist Angle'] <
+            #                 ideal_angles[shot_id]['wrist angle']['angle_to'])
+            #     },
+            #     {
+            #         'Ideal hip Angle': [ideal_angles[shot_id]['hip angle']['angle_from'],
+            #                             ideal_angles[shot_id]['hip angle']['angle_to']],
+            #         'Player hip Angle': player_angles['Front Hip Angle'],
+            #         'is_shot_correct': (
+            #                 ideal_angles[shot_id]['hip angle']['angle_from'] < player_angles['Front Hip Angle'] <
+            #                 ideal_angles[shot_id]['hip angle']['angle_to'])
+            #     },
+            #     {
+            #         'Ideal knee Angle': [ideal_angles[shot_id]['knee angle']['angle_from'],
+            #                              ideal_angles[shot_id]['knee angle']['angle_to']],
+            #         'Player knee Angle': player_angles['Front Knee Angle'],
+            #         'is_shot_correct': (
+            #                 ideal_angles[shot_id]['knee angle']['angle_from'] < player_angles['Front Knee Angle'] <
+            #                 ideal_angles[shot_id]['knee angle']['angle_to'])
+            #     },
+            #     {
+            #         'Ideal bat and hip distance': [ideal_angles[shot_id]['bat and hip distance']['angle_from'],
+            #                                        ideal_angles[shot_id]['bat and hip distance']['angle_to']],
+            #         'Player bat and hip distance': player_angles['Bat-Hip Distance'],
+            #         'is_shot_correct': (
+            #                 ideal_angles[shot_id]['bat and hip distance']['angle_from'] < player_angles[
+            #             'Bat-Hip Distance'] < ideal_angles[shot_id]['bat and hip distance']['angle_to'])
+            #     },
+            # ]
+            results = [
+                {
+                    'Elbow Ideal Angle From': angle_map['elbow angle']['from'],
+                    'Elbow Ideal Angle To': angle_map['elbow angle']['to'],
+                    'Player Elbow Angle': player_angles['Front Elbow Angle'],
+                    'is_angle_correct': angle_map['elbow angle']['from'] < player_angles['Front Elbow Angle'] <
+                                       angle_map['elbow angle']['to']
+                },
+                {
+                    'Shoulder Inclination Ideal From': angle_map['shoulder inclination']['from'],
+                    'Shoulder Inclination Ideal To': angle_map['shoulder inclination']['to'],
+                    'Player Shoulder Inclination': player_angles['Shoulder Inclination'],
+                    'is_angle_correct': angle_map['shoulder inclination']['from'] < player_angles[
+                        'Shoulder Inclination'] < angle_map['shoulder inclination']['to']
+                },
+                {
+                    'Wrist Ideal Angle From': angle_map['wrist angle']['from'],
+                    'Wrist Ideal Angle To': angle_map['wrist angle']['to'],
+                    'Player Wrist Angle': player_angles['Front Wrist Angle'],
+                    'is_angle_correct': angle_map['wrist angle']['from'] < player_angles['Front Wrist Angle'] <
+                                       angle_map['wrist angle']['to']
+                },
+                {
+                    'Hip Ideal Angle From': angle_map['hip angle']['from'],
+                    'Hip Ideal Angle To': angle_map['hip angle']['to'],
+                    'Player Hip Angle': player_angles['Front Hip Angle'],
+                    'is_angle_correct': angle_map['hip angle']['from'] < player_angles['Front Hip Angle'] <
+                                       angle_map['hip angle']['to']
+                },
+                {
+                    'Knee Ideal Angle From': angle_map['knee angle']['from'],
+                    'Knee Ideal Angle To': angle_map['knee angle']['to'],
+                    'Player Knee Angle': player_angles['Front Knee Angle'],
+                    'is_angle_correct': angle_map['knee angle']['from'] < player_angles['Front Knee Angle'] <
+                                       angle_map['knee angle']['to']
+                },
+                {
+                    'Bat-Hip Distance Ideal From': angle_map['bat and hip distance']['from'],
+                    'Bat-Hip Distance Ideal To': angle_map['bat and hip distance']['to'],
+                    'Player Bat-Hip Distance': player_angles['Bat-Hip Distance'],
+                    'is_angle_correct': angle_map['bat and hip distance']['from'] < player_angles['Bat-Hip Distance'] <
+                                       angle_map['bat and hip distance']['to']
+                },
+            ]
 
-        shot_check = True
-        correct_angle_names_list = []
-        incorrect_angle_names_list = []
-        for item in results:
-            key_name = list(item.keys())[1]
-            angle_name = key_name.split(" Played Angle")[0]
-            if item["is_shot_correct"]:
-                correct_angle_names_list.append(angle_name)
-            else:
-                check = False
-                incorrect_angle_names_list.append(angle_name)
-        correct_angle_names = ", ".join(correct_angle_names_list)
-        incorrect_angle_names = ", ".join(incorrect_angle_names_list)
-        shotresult = ShotResult(session_shot_id=sessionshot_id, is_shot_correct=shot_check,
-                                left_arm_angle=player_angles['Left Arm Angle'],
-                                right_arm_angle=player_angles['Right Arm Angle'],
-                                left_leg_angle=player_angles['Left Leg Angle'],
-                                right_leg_angle=player_angles['Right Leg Angle'],
-                                correct_angles=correct_angle_names if correct_angle_names else None,
-                                incorrect_angles=incorrect_angle_names if incorrect_angle_names else None)
-        db.session.add(shotresult)
-        db.session.commit()
+            return results
 
-        return results
+        except Exception as exp:
+            return {"Error": str(exp)}
+
+    @staticmethod
+    def add_shot_result(results, session_id):
+
+        try:
+            correct_angle_names_list = []
+            incorrect_angle_names_list = []
+            correct_angle_names = ""
+            incorrect_angle_names = ""
+
+            shots = {}
+            check_for_shot_correction = True
+            for result in results:
+                player_key = [key for key in result.keys() if 'Player' in key]
+                print(f"Shot angle is:{player_key} and is_angle_correct?:{result['is_angle_correct']}")
+                if result['is_angle_correct']:
+                    angle_name = player_key[0].replace("Player ", "")
+                    correct_angle_names_list.append(angle_name)
+                    shots[angle_name] = result[player_key[0]]
+                else:
+                    check_for_shot_correction = False
+                    angle_name = player_key[0].replace("Player ", "")
+                    incorrect_angle_names_list.append(angle_name)
+                    shots[angle_name] = result[player_key[0]]
+
+            correct_angle_names = ", ".join(correct_angle_names_list)
+            incorrect_angle_names = ", ".join(incorrect_angle_names_list)
+
+            session_player_id = (SessionPlayer.query.filter(SessionPlayer.session_id == session_id).first()).id
+            print("session_player_id is:", session_player_id)
+
+            session_shot_id = (
+                SessionShot.query.filter(SessionShot.session_player_id == session_player_id).first()).id
+            print("session_shot_id is:", session_shot_id)
+
+            shotResult = ShotResult(session_shot_id=session_shot_id, is_shot_correct=check_for_shot_correction,
+                                    elbow_angle=shots['Elbow Angle'],
+                                    shoulder_inclination=shots['Shoulder Inclination'],
+                                    wrist_angle=shots['Wrist Angle'], hip_angle=shots['Hip Angle'],
+                                    knee_angle=shots['Knee Angle'],
+                                    bat_hip_distance=shots['Bat-Hip Distance'], correct_angles=correct_angle_names,
+                                    incorrect_angles=incorrect_angle_names)
+
+            db.session.add(shotResult)
+            db.session.commit()
+
+            return {"Result: Results added successfully in database"}
+        except Exception as exp:
+            return {"Error": str(exp)}
+
+        # correct_angle_names = ""
+        # incorrect_angle_names = ""
+        #
+        # shots = {}
+        # check_for_shot_correction = True
+        # for result in results:
+        #     player_key = [key for key in result.keys() if 'Player' in key]
+        #     print(f"Shot angle is:{player_key[0]} and is_angle_correct?:{result['is_angle_correct']}")
+        #     if result['is_angle_correct']:
+        #         angle_name = player_key[0].replace("Player ", "")
+        #         correct_angle_names = correct_angle_names + angle_name + " "
+        #         shots[angle_name] = result[player_key]
+        #     else:
+        #         check_for_shot_correction = False
+        #         angle_name = player_key[0].replace("Player ", "")
+        #         incorrect_angle_names = incorrect_angle_names + angle_name + " "
+        #         shots[angle_name] = result[player_key]
+        # print('here')
+        # print("shots['Elbow Angle'] is:", shots['Elbow Angle'])
+        # print("correct_angle_names are", correct_angle_names)
+        # print("incorrect_angle_names are", incorrect_angle_names)
+        # session_player_id = (SessionPlayer.query.filter(SessionPlayer.session_id == session_id).first()).id
+        # print("session_player_id is:", session_player_id)
+        #
+        # session_shot_id = (
+        #     SessionShot.query.filter(SessionPlayer.session_player_id == session_player_id).first()).id
+        # print("session_shot_id is:", session_shot_id)
+        #
+        # shotResult = ShotResult(session_shot_id=session_shot_id, is_shot_correct=check_for_shot_correction,
+        #                         elbow_angle=shots['Elbow Angle'],
+        #                         shoulder_inclination=shots['Shoulder Inclination'],
+        #                         wrist_angle=shots['Wrist Angle'], hip_angle=shots['Hip Angle'],
+        #                         knee_angle=shots['Knee Angle'],
+        #                         bat_hip_distance=shots['Bat-Hip Distance'], correct_angles=correct_angle_names,
+        #                         incorrect_angles=incorrect_angle_names)
+        #
+        # db.session.add(shotResult)
+        # db.session.commit()
+        #
+        # return {"Result: Results added successfully in database"}
+
+    @staticmethod
+    def get_session_shot_result(session_id):
+        try:
+            session_player_id = (SessionPlayer.query.filter(SessionPlayer.session_id == session_id).first()).id
+            print("session_player_id is:", session_player_id)
+
+            session_shot_id = (
+                SessionShot.query.filter(SessionPlayer.session_player_id == session_player_id).first()).id
+            print("session_shot_id is:", session_shot_id)
+
+            shotResult = ShotResult.query.filter(ShotResult.session_shot_id == session_shot_id).first()
+
+            return shotResult
+        except Exception as exp:
+            return {"Error": str(exp)}
+
 
 # Flash queries corresponding to sql
 
