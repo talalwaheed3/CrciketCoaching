@@ -54,6 +54,7 @@ API/
 ├── templates/            # (Optional) For Flask frontend
 
 
+
 🚀 **How to Run**
 Install required libraries:
 
@@ -81,9 +82,18 @@ Use the Flask endpoints or directly run the processing scripts to analyze a cric
 
 Some Visual Dashboard Representation: 
 
-![12](https://github.com/user-attachments/assets/ed0ce033-f794-4461-8068-95178abf703e)  # For uploading Sessions
-![13](https://github.com/user-attachments/assets/25824917-b12c-4dc2-bd58-35917ee0c9d3)  # Selecting a shot video
-![14](https://github.com/user-attachments/assets/f1b1837e-bf7c-4d6f-99a6-e5c758d9a7ad)  # Resulting "best frame" of with euclidean distance of bat-ball
-![15](https://github.com/user-attachments/assets/d08b27eb-279f-4015-8174-08d355a5736d)  # Drawing landmarks of that 'best frame' and calculating angles
-![16](https://github.com/user-attachments/assets/039fb0eb-58bb-4729-9e4a-335f60069a52)  # Showing results
+# For uploading Sessions
+![12](https://github.com/user-attachments/assets/ed0ce033-f794-4461-8068-95178abf703e)  
+
+# Selecting a shot video
+![13](https://github.com/user-attachments/assets/25824917-b12c-4dc2-bd58-35917ee0c9d3)  
+
+ # Resulting "best frame" of with euclidean distance of bat-ball
+![14](https://github.com/user-attachments/assets/f1b1837e-bf7c-4d6f-99a6-e5c758d9a7ad) 
+
+# Drawing landmarks of that 'best frame' and calculating angles
+![15](https://github.com/user-attachments/assets/d08b27eb-279f-4015-8174-08d355a5736d)  
+
+# Showing results
+![16](https://github.com/user-attachments/assets/039fb0eb-58bb-4729-9e4a-335f60069a52)  
 
