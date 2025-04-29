@@ -1,0 +1,61 @@
+.session-results {
+  padding: 20px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.session-dropdown {
+  padding: 8px;
+  font-size: 16px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.session-info {
+  background-color: #f0f8ff;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.shots-section {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.shot-block {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.results-table th, .results-table td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.correct {
+  color: green;
+  font-weight: bold;
+}
+
+.wrong {
+  color: red;
+  font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  .results-table th, .results-table td {
+    font-size: 12px;
+    padding: 8px;
+  }
+}
