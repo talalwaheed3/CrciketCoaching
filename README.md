@@ -42,11 +42,17 @@ Flask (Backend API)
 📂 Project Structure:
 
 API/
+
 ├── app.py                # Main Flask application
+
 ├── processing_video.py   # Video processing and frame extraction using Yolov8
+
 ├── angles.py             # Angle calculations and pose detection using Mediapipe
+
 ├── static/               # (Optional) Store output images
+
 ├── templates/            # (Optional) For Flask frontend
+
 
 🚀 **How to Run**
 Install required libraries:
