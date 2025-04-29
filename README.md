@@ -2,7 +2,7 @@
 This project is a Cricket Shot Analysis System that automatically evaluates a batsman's technique by analyzing their body posture during cricket shots (like Cover Drive, Pull Shot, Straight Drive, Sweep).
 It uses computer vision models to detect body landmarks and calculate joint angles, providing feedback based on ideal standards.
 
-📚 **Project Overview**
+# 📚Project Overview
 
 **Body Detection:**
 
@@ -82,7 +82,7 @@ Use the Flask endpoints or directly run the processing scripts to analyze a cric
 
 Some Visual Dashboard Representation: 
 
-# For uploading Sessions
+# Arranged Sessions (For Live recording or uploading videos of different Sessions)
 ![12](https://github.com/user-attachments/assets/ed0ce033-f794-4461-8068-95178abf703e)  
 
 # Selecting a shot video
