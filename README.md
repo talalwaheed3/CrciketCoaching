@@ -49,8 +49,6 @@ API/
 
 ├── angles.py             # Angle calculations and pose detection using Mediapipe
 
-├── static/               # (Optional) Store output images
-
 ├── templates/            # (Optional) For Flask frontend
 
 
@@ -75,10 +73,9 @@ Use the Flask endpoints or directly run the processing scripts to analyze a cric
 
 - Extensible to other cricket shots in the future.
 
-📈 Future Improvements
-- Real-time live coaching through webcam input.
-
 - Train custom YOLOv11 model fine-tuned on cricket players for further improving accuracy of our Ground Truth of our Model.
+
+- Each Coach can add their own Ideal angles(Ground Truth) to test their player on.
 
 Some Visual Dashboard Representation: 
 
