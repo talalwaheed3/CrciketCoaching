@@ -12,6 +12,9 @@ class ManagerController:
     @staticmethod
     def add_team(team_name, players_list, coach_id):
         try:
+            is_team_exist = Team.query.filter(Team.name == team_name).first()
+            if is_team_exist:
+                return {"result": f"{team_name} team already exists. "}
             team = Team(name=team_name)
             db.session.add(team)
             db.session.flush()
@@ -43,7 +46,9 @@ class ManagerController:
         try:
             db.session.add(user)
             db.session.commit()
-            return {"result": f"{role} added successfully"}
+            return {"value": True,
+                    "result": f"{role} added successfully",
+                    "coach_id": 2}
         except Exception as exp:
             return {"result": f"error while add {role} is:{exp}"}
 

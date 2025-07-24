@@ -8,3 +8,4 @@ class Angle(db.Model):
 
     angleLines = db.relationship("AngleLine", back_populates="angle")   # Done
     shot_ideal_angle = db.relationship("ShotIdealAngle", back_populates="angle")   # Done
+    # coach_angle = db.relationship("CoachAngle", back_populates="angle")   # Done

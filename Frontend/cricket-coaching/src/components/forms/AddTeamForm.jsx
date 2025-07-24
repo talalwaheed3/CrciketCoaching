@@ -55,7 +55,7 @@ const AddTeamForm = () => {
   }, []);
 
   const handleConfirmPlayers = () => {
-    if (tempSelectedPlayers.length < 15) {
+    if (tempSelectedPlayers.length < 1  ) {
       setPlayerSelectionWarning(true);
     } else {
       setPlayerSelectionWarning(false);
@@ -82,14 +82,6 @@ const AddTeamForm = () => {
     );
   };
 
-  useEffect(() => {
-    console.log("Updated tempSelectedPlayers:", tempSelectedPlayers);
-  }, [tempSelectedPlayers]);
-
-  useEffect(() => {
-    console.log("Updated selectedPlayers:", selectedPlayers);
-  }, [selectedPlayers]);
-
   const handleRemovePlayer = (player) => {
     setSelectedPlayers((prevSelected) =>
       prevSelected.filter((p) => p !== player)
@@ -103,7 +95,7 @@ const AddTeamForm = () => {
       return;
     }
 
-    if (selectedPlayers.length < 15) {
+    if (selectedPlayers.length < 1) {
       setAddTeamWarning(true); // Show warning above "Add Team" button
       return;
     }
@@ -111,7 +103,7 @@ const AddTeamForm = () => {
     const teamData = {
       name: teamName,
       coach_id: selectedCoach,
-      list_of_players: selectedPlayers,
+      players: selectedPlayers,
     };
 
     try {
@@ -175,7 +167,7 @@ const AddTeamForm = () => {
           {selectedPlayers.map((player, index) => (
             <Chip
               key={index}
-              label={players.find(p => p.id === player)?.name || "Unknown"} // Fixed player name issue
+              label={players.find((p) => p.id === player)?.name || "Unknown"} // Fixed player name issue
               onDelete={() => handleRemovePlayer(player)}
               color="primary"
               sx={{

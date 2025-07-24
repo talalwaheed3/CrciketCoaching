@@ -1,23 +1,24 @@
 import { useState } from "react";
 import { Box, Container } from "@mui/material";
-import Sidebar from './Sidebar'
+import Sidebar from "./Sidebar";
 import MainContent from "./MainContent";
 import Navbar from "../navbar/Navbar";
 
-const Dashboard = ({userDashboard, defaultSection, menuItems, role}) => {
-  console.log("defaultSection in Dashboard is:", defaultSection)
-  console.log("userDashboard in Dashboard is:", userDashboard)
+const Dashboard = ({ userDashboard, defaultSection, menuItems, role }) => {
   const [selectedSection, setSelectedSection] = useState(defaultSection);
 
   return (
     <>
       {/* Navbar - Positioned Fixed at the Top */}
-      <Navbar className="color-scheme"/>
+      <Navbar className="color-scheme" />
 
-      <Box sx={{ display: "flex", height: "100vh"}}>
+      <Box sx={{ display: "flex", height: "100vh" }}>
         {/* Sidebar - Fixed on the Left */}
-        {/* <Sidebar userDashboard={userDashboard} setSelectedSection={setSelectedSection} /> */}
-        <Sidebar userDashboard={userDashboard} setSelectedSection={setSelectedSection} menuItems={menuItems} />
+        <Sidebar
+          userDashboard={userDashboard}
+          setSelectedSection={setSelectedSection}
+          menuItems={menuItems}
+        />
 
         {/* Main Content - Adjusted Margin for Sidebar & Navbar */}
         <Box
@@ -30,7 +31,7 @@ const Dashboard = ({userDashboard, defaultSection, menuItems, role}) => {
           }}
         >
           <Container>
-            <MainContent selectedSection={selectedSection} role={role}/>
+            <MainContent selectedSection={selectedSection} role={role} />
           </Container>
         </Box>
       </Box>

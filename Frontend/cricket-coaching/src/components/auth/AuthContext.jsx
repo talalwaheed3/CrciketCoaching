@@ -20,14 +20,12 @@ export const AuthProvider = ({ children }) => {
   const login = (userData) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
-    navigate("/dashboard"); // Redirect after login
   };
 
   // Logout function
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
-    navigate("/login");
   };
 
   return (

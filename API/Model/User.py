@@ -21,4 +21,5 @@ class User(db.Model):
     team_Coach = db.relationship("TeamCoach", back_populates="user")        # Done
     team_Manager = db.relationship("TeamManager", back_populates="user")    # Done
     team_Player = db.relationship("TeamPlayer", back_populates="user")      # Done
+    coach_angle = db.relationship("CoachAngle", back_populates="coach")      # Done
     # archive = db.relationship("Archive", foreign_keys="Archive.user_id", back_populates="archive_user")

@@ -10,7 +10,6 @@ import {
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 const UserProfileMenu = ({ user }) => {
-  console.log("In UserProfileMenu user is:", user)
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -30,6 +29,9 @@ const UserProfileMenu = ({ user }) => {
       </IconButton>
 
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        <MenuItem disabled>
+          <Typography variant="h6">User Id: {user.id}</Typography>
+        </MenuItem>
         <MenuItem disabled>
           <Typography variant="h6">Name: {user.name}</Typography>
         </MenuItem>

@@ -2,18 +2,14 @@ import { AppBar, Toolbar, Typography, Button } from "@mui/material";
 import UserProfileMenu from "./UserProfileMenu";
 // import { useAuth } from "../auth/AuthContext";
 import AuthContext from "../auth/AuthContext";
-import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
-  console.log("in Navbar user is:", user);
-  const navigate = useNavigate();
 
   const handleLogout = () => {
     alert("Logging out...");
     logout();
-    navigate("/signin");
   };
 
   return (
@@ -56,7 +52,7 @@ const Navbar = () => {
             },
             boxShadow: "0px 3px 5px rgba(0,0,0,0.2)",
           }}
-          onClick={()=>handleLogout()}
+          onClick={() => handleLogout()}
         >
           Logout
         </Button>

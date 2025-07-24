@@ -17,22 +17,22 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import FilterListIcon from "@mui/icons-material/FilterList";
+// import VisibilityIcon from "@mui/icons-material/Visibility";
+// import FilterListIcon from "@mui/icons-material/FilterList";
 import handleRequest from "../../utils/handleRequest";
 
 const ViewUserTable = ({ body, endpoint }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterAnchor, setFilterAnchor] = useState(null);
+  // const [searchTerm, setSearchTerm] = useState("");
+  // const [filterAnchor, setFilterAnchor] = useState(null);
   const [users, setUsers] = useState();
 
-  const handleFilterClick = (event) => {
-    setFilterAnchor(event.currentTarget);
-  };
+  // const handleFilterClick = (event) => {
+  //   setFilterAnchor(event.currentTarget);
+  // };
 
-  const handleFilterClose = () => {
-    setFilterAnchor(null);
-  };
+  // const handleFilterClose = () => {
+  //   setFilterAnchor(null);
+  // };
 
   const handleDisplayUsers = async () => {
     try {
@@ -118,7 +118,7 @@ const ViewUserTable = ({ body, endpoint }) => {
                 <TableCell>Contact</TableCell>
                 {body.role === "player" && <TableCell>Type</TableCell>}
                 <TableCell sx={{ whiteSpace: "nowrap", fontSize: "0.875rem" }}>Team Name</TableCell>
-                <TableCell align="center">Actions</TableCell>
+                {/* <TableCell align="center">Actions</TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -140,7 +140,7 @@ const ViewUserTable = ({ body, endpoint }) => {
                     <TableCell>
                       {user.team_name ? user.team_name : "Not Assigned"}
                     </TableCell>
-                    <TableCell align="right">
+                    {/* <TableCell align="right">
                       <Button
                         variant="contained"
                         color="error"
@@ -161,7 +161,7 @@ const ViewUserTable = ({ body, endpoint }) => {
                       >
                         Archive
                       </Button>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 ))
               ) : (

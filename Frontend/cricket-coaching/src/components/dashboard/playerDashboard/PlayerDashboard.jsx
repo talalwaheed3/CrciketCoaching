@@ -5,7 +5,7 @@ import { QueryStats } from "@mui/icons-material";
 
 const PlayerDashboard = () => {
   const playerMenuItems = [
-    // { key: "viewTeam", label: "View Team", icon: <GroupIcon /> },
+    { key: "viewTeam", label: "View Team", icon: <GroupIcon /> },
     { key: "viewJoinedSession", label: "Joined Sessions", icon: <EventIcon /> },
     { key: "viewPerformance", label: "View Performance", icon: <QueryStats /> },
   ];
@@ -13,7 +13,7 @@ const PlayerDashboard = () => {
   return (
     <Dashboard
       userDashboard={"Player Dashboard"}
-      defaultSection="viewJoinedSession"
+      defaultSection="viewTeam"
       menuItems={playerMenuItems}
       role="player"
     />

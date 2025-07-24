@@ -2,15 +2,13 @@
 # <-------------------------------------------- USING YOLOV11 ---------------------------------------------->
 # <-------------------------------------------- USING YOLOV11 ---------------------------------------------->
 
-
-import cv2
-import numpy as np
 from ultralytics import YOLO
 import os
+import cv2
+import numpy as np
 import mediapipe as mp
 
 model_path = "D:\BIIT\Semester-7(FYP-1)\CrciketCoaching\API\yolo11x-pose.pt"
-
 
 # The 17 COCO keypoint names, in order
 JOINT_NAMES = [
@@ -60,7 +58,7 @@ def processing_image_using_yolov11(image, bat_center, stance="right"):
         return None
 
     person = kpts[0].cpu().numpy()  # now a (17,3) array
-    coords = person[:, :2]          # drop confidence → (17,2)
+    coords = person[:, :2]  # drop confidence → (17,2)
 
     # 3) Build a name→(x,y) dict
     landmarks = {name: tuple(coords[i]) for i, name in enumerate(JOINT_NAMES)}
@@ -72,23 +70,23 @@ def processing_image_using_yolov11(image, bat_center, stance="right"):
     # 5) Pick the “front” side joints
     if stance.lower() == "right":
         wrist, elbow, shoulder = get_point('LEFT_WRIST'), get_point('LEFT_ELBOW'), get_point('LEFT_SHOULDER')
-        hip, knee, ankle   = get_point('LEFT_HIP'),   get_point('LEFT_KNEE'),   get_point('LEFT_ANKLE')
-        opp_shldr          = get_point('RIGHT_SHOULDER')
+        hip, knee, ankle = get_point('LEFT_HIP'), get_point('LEFT_KNEE'), get_point('LEFT_ANKLE')
+        opp_shldr = get_point('RIGHT_SHOULDER')
     else:
         wrist, elbow, shoulder = get_point('RIGHT_WRIST'), get_point('RIGHT_ELBOW'), get_point('RIGHT_SHOULDER')
-        hip, knee, ankle   = get_point('RIGHT_HIP'),    get_point('RIGHT_KNEE'),    get_point('RIGHT_ANKLE')
-        opp_shldr          = get_point('LEFT_SHOULDER')
+        hip, knee, ankle = get_point('RIGHT_HIP'), get_point('RIGHT_KNEE'), get_point('RIGHT_ANKLE')
+        opp_shldr = get_point('LEFT_SHOULDER')
 
     finger = wrist  # crude proxy
 
     # 6) Compute your six metrics
     angles = {
-        "Front Elbow Angle":    round(calculate_angle(shoulder, elbow, wrist)),
-        "Front Wrist Angle":    round(calculate_angle(elbow, wrist, finger)),
+        "Front Elbow Angle": round(calculate_angle(shoulder, elbow, wrist)),
+        "Front Wrist Angle": round(calculate_angle(elbow, wrist, finger)),
         "Shoulder Inclination": round(calculate_angle(opp_shldr, shoulder, hip)),
-        "Front Hip Angle":      round(calculate_angle(shoulder, hip, knee)),
-        "Front Knee Angle":     round(calculate_angle(hip, knee, ankle)),
-        "Bat-Hip Distance":     round(euclidean_distance(bat_center, hip))
+        "Front Hip Angle": round(calculate_angle(shoulder, hip, knee)),
+        "Front Knee Angle": round(calculate_angle(hip, knee, ankle)),
+        "Bat-Hip Distance": round(euclidean_distance(bat_center, hip))
     }
 
     # 7) Draw **all** joints so you can visually confirm
@@ -97,26 +95,26 @@ def processing_image_using_yolov11(image, bat_center, stance="right"):
 
     # 8) Re‐use your old annotation logic to draw the angle lines + text
     annotated = {
-        "Front Elbow Angle":    (shoulder,   elbow,    wrist),
-        "Front Wrist Angle":    (elbow,      wrist,    finger),
-        "Shoulder Inclination": (opp_shldr,  shoulder, hip),
-        "Front Hip Angle":      (shoulder,   hip,      knee),
-        "Front Knee Angle":     (hip,        knee,     ankle),
+        "Front Elbow Angle": (shoulder, elbow, wrist),
+        "Front Wrist Angle": (elbow, wrist, finger),
+        "Shoulder Inclination": (opp_shldr, shoulder, hip),
+        "Front Hip Angle": (shoulder, hip, knee),
+        "Front Knee Angle": (hip, knee, ankle),
     }
-    for i, (label, (p1,p2,p3)) in enumerate(annotated.items()):
-        cv2.line(image, tuple(map(int,p1)), tuple(map(int,p2)), (255,255,0), 2)
-        cv2.line(image, tuple(map(int,p3)), tuple(map(int,p2)), (255,255,0), 2)
-        x2,y2 = map(int,p2)
+    for i, (label, (p1, p2, p3)) in enumerate(annotated.items()):
+        cv2.line(image, tuple(map(int, p1)), tuple(map(int, p2)), (255, 255, 0), 2)
+        cv2.line(image, tuple(map(int, p3)), tuple(map(int, p2)), (255, 255, 0), 2)
+        x2, y2 = map(int, p2)
         cv2.putText(image, f"{label}: {angles[label]}°",
-                    (x2+10, y2-10 - i*20),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 2)
+                    (x2 + 10, y2 - 10 - i * 20),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
     # 9) Finally draw the bat⇄hip distance
-    cv2.line(image, tuple(map(int,bat_center)), tuple(map(int,hip)), (0,255,255), 2)
+    cv2.line(image, tuple(map(int, bat_center)), tuple(map(int, hip)), (0, 255, 255), 2)
     cv2.putText(image,
                 f"Bat-Hip Dist: {angles['Bat-Hip Distance']}px",
-                (int(bat_center[0]), int(bat_center[1]-10)),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,165,255), 2)
+                (int(bat_center[0]), int(bat_center[1] - 10)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 165, 255), 2)
 
     # Show result
     cv2.imshow("result using yolov11", image)
@@ -126,7 +124,6 @@ def processing_image_using_yolov11(image, bat_center, stance="right"):
     return angles, image
 
 
-
 # <-------------------------------------------- USING YOLOV11 ---------------------------------------------->
 # <-------------------------------------------- USING YOLOV11 ---------------------------------------------->
 # <-------------------------------------------- USING YOLOV11 ---------------------------------------------->
@@ -135,7 +132,6 @@ def processing_image_using_yolov11(image, bat_center, stance="right"):
 # <-------------------------------------------- USING MEDIAPIPE ---------------------------------------------->
 # <-------------------------------------------- USING MEDIAPIPE ---------------------------------------------->
 # <-------------------------------------------- USING MEDIAPIPE ---------------------------------------------->
-
 
 def processing_image_using_mediapipe(image, bat_center, stance="right"):
     """
@@ -221,28 +217,17 @@ def processing_image_using_mediapipe(image, bat_center, stance="right"):
 
         cv2.imshow("result using mediapipe", image)
         cv2.waitKey(0)
+        # key = cv2.waitKey(0)
+        # if key == ord('s'):
+        #     cv2.imwrite(path, image)
         return angles, image
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#
+# image = cv2.imread(r"D:\BIIT\Semester-7(FYP-1)\CrciketCoaching\API\Videos\straight drive GT.png")
+# all_angles, img = processing_image_using_mediapipe(image, (573, 390))
+# print('angles are:', all_angles)
+#
 
 
 # image_path = r"D:\BIIT\Semester-7(FYP-1)\CrciketCoaching\API\best_frame.jpg"

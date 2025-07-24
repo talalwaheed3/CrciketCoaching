@@ -1,0 +1,410 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import '../Backend/Connectivity.dart';
+
+class ViewBestShot extends StatefulWidget {
+  final String sessionId;
+  final String sessionType;
+  const ViewBestShot({Key? key, required this.sessionId,
+    required this.sessionType,}) : super(key: key);
+  @override
+  State<ViewBestShot> createState() => _ViewBestShotState();
+}
+
+class _ViewBestShotState extends State<ViewBestShot> {
+  late Future<Map<String, dynamic>> _shotDataFuture;
+  int _currentImageIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _shotDataFuture = _fetchShotData();
+  }
+
+  Future<Map<String, dynamic>> _fetchShotData() async {
+    try {
+      final response = await ConnectivityService.post(
+        '/coach/get_shot_result',
+        {"session_id": widget.sessionId},
+      );
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data.containsKey('Error')) {
+          throw Exception('Video not processed');
+        }
+        if (data.containsKey('Results') && data.containsKey('Ideal Angles')) {
+          return data;
+        }
+        throw Exception('Video not processed');
+      }
+      throw Exception('Video not processed');
+    } catch (e) {
+      print('Error fetching shot data: $e');
+      throw Exception('Video not processed');
+    }
+  }
+
+  // Find the best shot from all available shots
+  int _findBestShotIndex(Map<String, dynamic> data) {
+    try {
+      final results = data['Results'] as List;
+      if (results.isEmpty) {
+        return -1;
+      }
+
+      final ideal = data['Ideal Angles'] as Map<String, dynamic>;
+      
+      int bestShotIndex = 0;
+      int maxCorrectAngles = 0;
+      
+      // Evaluate each shot and find the one with most correct angles
+      for (int i = 0; i < results.length; i++) {
+        final result = results[i] as Map<String, dynamic>;
+        int correctCount = 0;
+        
+        // Check each angle
+        if (_isAngleCorrect(result['elbow_angle'], 
+            ideal['elbow ideal']['Elbow Ideal Angle From'],
+            ideal['elbow ideal']['Elbow Ideal Angle To'])) {
+          correctCount++;
+        }
+        
+        if (_isAngleCorrect(result['shoulder_inclination'],
+            ideal['shoulder ideal']['Shoulder Inclination Ideal From'],
+            ideal['shoulder ideal']['Shoulder Inclination Ideal To'])) {
+          correctCount++;
+        }
+        
+        if (_isAngleCorrect(result['wrist_angle'],
+            ideal['wrist ideal']['Wrist Ideal Angle From'],
+            ideal['wrist ideal']['Wrist Ideal Angle To'])) {
+          correctCount++;
+        }
+        
+        if (_isAngleCorrect(result['hip_angle'],
+            ideal['hip ideal']['Hip Ideal Angle From'],
+            ideal['hip ideal']['Hip Ideal Angle To'])) {
+          correctCount++;
+        }
+        
+        if (_isAngleCorrect(result['knee_angle'],
+            ideal['knee angle']['Knee Ideal Angle From'],
+            ideal['knee angle']['Knee Ideal Angle To'])) {
+          correctCount++;
+        }
+        
+        if (_isAngleCorrect(result['bat_hip_distance'],
+            ideal['bat-hip ideal distance']['Bat-Hip Distance Ideal From'],
+            ideal['bat-hip ideal distance']['Bat-Hip Distance Ideal To'])) {
+          correctCount++;
+        }
+        
+        // Update best shot if this one has more correct angles
+        if (correctCount > maxCorrectAngles) {
+          maxCorrectAngles = correctCount;
+          bestShotIndex = i;
+        }
+      }
+      
+      return bestShotIndex;
+    } catch (e) {
+      print('Error finding best shot: $e');
+      return 0; // Return first shot as fallback
+    }
+  }
+
+  bool _isAngleCorrect(dynamic measured, dynamic minIdeal, dynamic maxIdeal) {
+    final measuredValue = _parseDouble(measured);
+    final minValue = _parseDouble(minIdeal);
+    final maxValue = _parseDouble(maxIdeal);
+    
+    if (measuredValue == 0 || minValue == 0 || maxValue == 0) return false;
+    return measuredValue >= minValue && measuredValue <= maxValue;
+  }
+
+  List<_AngleRow> _buildRows(Map<String, dynamic> data) {
+    try {
+      final results = data['Results'] as List;
+      if (results.isEmpty) {
+        print('No results found in data');
+        return [];
+      }
+
+      // Find the best shot from all available shots
+      int bestShotIndex = _findBestShotIndex(data);
+      
+      if (bestShotIndex == -1) {
+        return [];
+      }
+
+      // Update current image index to show the best shot
+      _currentImageIndex = bestShotIndex;
+
+      final result = results[bestShotIndex] as Map<String, dynamic>;
+      final ideal = data['Ideal Angles'] as Map<String, dynamic>;
+
+      return [
+        _createAngleRow(
+            'Elbow Angle',
+            result['elbow_angle'],
+            ideal['elbow ideal']['Elbow Ideal Angle From'],
+            ideal['elbow ideal']['Elbow Ideal Angle To']
+        ),
+        _createAngleRow(
+            'Shoulder Angle',
+            result['shoulder_inclination'],
+            ideal['shoulder ideal']['Shoulder Inclination Ideal From'],
+            ideal['shoulder ideal']['Shoulder Inclination Ideal To']
+        ),
+        _createAngleRow(
+            'Wrist Angle',
+            result['wrist_angle'],
+            ideal['wrist ideal']['Wrist Ideal Angle From'],
+            ideal['wrist ideal']['Wrist Ideal Angle To']
+        ),
+        _createAngleRow(
+            'Hip Angle',
+            result['hip_angle'],
+            ideal['hip ideal']['Hip Ideal Angle From'],
+            ideal['hip ideal']['Hip Ideal Angle To']
+        ),
+        _createAngleRow(
+            'Knee Angle',
+            result['knee_angle'],
+            ideal['knee angle']['Knee Ideal Angle From'],
+            ideal['knee angle']['Knee Ideal Angle To']
+        ),
+        _createAngleRow(
+            'Bat-Hip Distance',
+            result['bat_hip_distance'],
+            ideal['bat-hip ideal distance']['Bat-Hip Distance Ideal From'],
+            ideal['bat-hip ideal distance']['Bat-Hip Distance Ideal To']
+        ),
+      ];
+    } catch (e) {
+      print('Error building rows: $e');
+      return [];
+    }
+  }
+
+  _AngleRow _createAngleRow(String name, dynamic measured, dynamic minIdeal,
+      dynamic maxIdeal) {
+    final measuredValue = _parseDouble(measured);
+    final minValue = _parseDouble(minIdeal);
+    final maxValue = _parseDouble(maxIdeal);
+
+    return _AngleRow(
+      name,
+      '${measuredValue.toStringAsFixed(1)}°',
+      '${minValue.toStringAsFixed(1)}°-${maxValue.toStringAsFixed(1)}°',
+      _isAngleInRange(measuredValue, minValue, maxValue),
+    );
+  }
+
+  double _parseDouble(dynamic value) {
+    if (value == null) return 0;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0;
+    return 0;
+  }
+
+  bool _isAngleInRange(double measured, double min, double max) {
+    if (measured == 0 || min == 0 || max == 0) return false;
+    return measured >= min && measured <= max;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[200],
+      appBar: AppBar(
+        backgroundColor: Colors.green[100],
+        foregroundColor: Colors.blue[900],
+        title: Text('${widget.sessionType} Best Shot'),
+        centerTitle: true,
+        elevation: 0,
+      ),
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: _shotDataFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  snapshot.error.toString().replaceAll('Exception: ', ''),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black87,
+                  ),
+                ),
+              ),
+            );
+          }
+          if (!snapshot.hasData || !snapshot.data!.containsKey('Results')) {
+            return const Center(child: Text('No data available'));
+          }
+
+          final data = snapshot.data!;
+          final results = data['Results'] as List;
+          final rows = _buildRows(data);
+
+          if (rows.isEmpty) {
+            return const Center(child: Text('No shots available'));
+          }
+
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Stack(
+                    children: [
+                      _buildImageSection(results),
+                    ],
+                  ),
+                ),
+                _buildTableSection(rows),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildImageSection(List results) {
+    final imagePath = results[_currentImageIndex]['best_frame_path'];
+    final fileName = imagePath.replaceAll('images/', '');
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Image.network(
+          '${ConnectivityService.baseUrl}/images/$fileName',
+          fit: BoxFit.contain,
+          width: double.infinity,
+          height: double.infinity,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Center(
+              child: CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded /
+                    loadingProgress.expectedTotalBytes!
+                    : null,
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) {
+            print('Image error: $error');
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(Icons.image_not_supported, size: 48, color: Colors.red),
+                  SizedBox(height: 8),
+                  Text('Image not found', style: TextStyle(color: Colors.red)),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTableSection(List<_AngleRow> rows) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Table(
+        border: TableBorder.all(color: Colors.black54, width: 1),
+        columnWidths: const {
+          0: FlexColumnWidth(2),
+          1: FlexColumnWidth(1.2),
+          2: FlexColumnWidth(1.2),
+          3: FlexColumnWidth(1),
+        },
+        children: [
+          const TableRow(
+            decoration: BoxDecoration(color: Colors.grey),
+            children: [
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'Body Part / Motion',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'Measured Angle (°)',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'Ideal Range (°)',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'Evaluation',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          ...rows.map(_buildTableRow).toList(),
+        ],
+      ),
+    );
+  }
+
+  TableRow _buildTableRow(_AngleRow row) {
+    return TableRow(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(row.bodyPart),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(row.measured),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(row.ideal),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Icon(
+            row.isOK ? Icons.check_circle : Icons.cancel,
+            color: row.isOK ? Colors.green : Colors.red,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AngleRow {
+  final String bodyPart;
+  final String measured;
+  final String ideal;
+  final bool isOK;
+
+  _AngleRow(this.bodyPart, this.measured, this.ideal, this.isOK);
+}

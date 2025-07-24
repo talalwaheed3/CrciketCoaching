@@ -12,7 +12,7 @@ import {
 import SportsCricketIcon from "@mui/icons-material/SportsCricket";
 import { styled } from "@mui/material/styles";
 
-const SidebarContainer = styled(Drawer)(({ theme }) => ({
+const SidebarContainer = styled(Drawer)(() => ({
   width: 250,
   flexShrink: 0,
   "& .MuiDrawer-paper": {
@@ -29,7 +29,6 @@ const SidebarContainer = styled(Drawer)(({ theme }) => ({
 }));
 
 const Sidebar = ({ setSelectedSection, userDashboard, menuItems }) => {
-  console.log("in Sidebar menuItems is:", menuItems)
   const [activeSection, setActiveSection] = useState(menuItems[0]?.key || "");
 
   return (
@@ -87,4 +86,3 @@ const Sidebar = ({ setSelectedSection, userDashboard, menuItems }) => {
 };
 
 export default Sidebar;
-

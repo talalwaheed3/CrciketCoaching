@@ -1,4 +1,5 @@
 const API_BASE_URL = "http://127.0.0.1:5000"; // Change this if backend URL changes
+// const API_BASE_URL = "http://192.168.18.149:5000"; // Change this if backend URL changes
 
 const apiRequest = async (endpoint, method = "GET", body = null) => {
   try {

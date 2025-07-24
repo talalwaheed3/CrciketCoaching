@@ -21,7 +21,6 @@ const ManagerDashboard = () => {
       menuItems={managerMenuItems}
       role="manager"
     />
-    // <Dashboard userDashboard="Manager Dashboard" defaultSection="addCoach"/>
   );
 };
 

@@ -1,4 +1,3 @@
-// import React from "react";
 import { Routes, Route, useNavigate } from "react-router-dom"; // Fix: Correct import
 import WelcomePage from "./components/WelcomePage";
 import SignInPage from "./components/auth/SignInPage";
@@ -20,6 +19,9 @@ const App = () => {
       if (user.role.toLowerCase() === "coach") navigate("/coachDashboard");
       if (user.role.toLowerCase() === "player") navigate("/playerDashboard");
     }
+    //  else {
+    //   navigate("/signin");
+    // }
   }, [user, navigate]);
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">

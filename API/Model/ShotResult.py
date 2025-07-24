@@ -14,5 +14,6 @@ class ShotResult(db.Model):
     bat_hip_distance = db.Column(db.Integer, nullable=False)
     correct_angles = db.Column(db.String(100), nullable=True)
     incorrect_angles = db.Column(db.String(100), nullable=True)
+    best_frame_path = db.Column(db.String(250), nullable=True)
 
     session_shot = db.relationship("SessionShot", back_populates="shot_result")     # Done

@@ -11,13 +11,14 @@ class LoginController:
         print("above if")
         if user:
             print("below if, above return, and user is:", user)
-            return {"result": "Login Successful",
+            return {
+                "value": True,
+                "result": "Login Successful",
                     'user': {'id': user.id, 'name': user.name, 'role': user.role, 'username': user.username,
-                             'password': user.password, 'experience': user.experience, 'date_of_birth': user.date_of_birth,
-                             'contact_no': user.contact_no, "path": ''}}
+                         'password': user.password, 'experience': user.experience, 'date_of_birth': user.date_of_birth,
+                         'contact_no': user.contact_no}}
         else:
             return None
-
 
 # from flask import jsonify, request
 # from sqlalchemy.exc import SQLAlchemyError
@@ -27,7 +28,7 @@ class LoginController:
 #
 # class UserLoginController:
 #
-#     @staticmethod
+#       @staticmeth        od
 #     def sign_in():
 #         data = request.get_json()
 #         username = data.get("username")
