@@ -95,5 +95,11 @@ Some Visual Dashboard Representation:
 ![15](https://github.com/user-attachments/assets/d08b27eb-279f-4015-8174-08d355a5736d)  
 
 # Showing results
-![16](https://github.com/user-attachments/assets/039fb0eb-58bb-4729-9e4a-335f60069a52)  
+-- Angle Results Table
+<img width="1895" height="844" alt="18" src="https://github.com/user-attachments/assets/a8c6063d-f9e4-49f8-9b17-593f26cafa7b" />
 
+-- Best Frame of the player's shot
+<img width="1896" height="846" alt="19" src="https://github.com/user-attachments/assets/b30e8d40-846b-4315-bcf3-a953c9dbe35c" />
+
+-- Corresponding Shot Tutorial for improving performance
+<img width="1895" height="842" alt="20" src="https://github.com/user-attachments/assets/3aebc760-f9ed-4dc0-849b-cb17edfa0a85" />
